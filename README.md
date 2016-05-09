@@ -1,4 +1,4 @@
-# Homework project on a Udacity course
+# Homework project of a Udacity course
 
 * Course: Object-Oriented JavaScript (Writing Reusable and Maintainable Code)
 * Link: [Visit description](https://cn.udacity.com/course/object-oriented-javascript--ud015/)
