@@ -4,7 +4,7 @@
 * Link: [Visit description](https://cn.udacity.com/course/object-oriented-javascript--ud015/)
 
 
-### Material already provided: <br>
+### Material already existent: <br>
 .  
 ├── css  
 ├── images  
