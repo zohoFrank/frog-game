@@ -1,5 +1,6 @@
 // Enemies our player must avoid
 var ENEMY_PNG = 'images/enemy-bug.png';
+var SQUARE_SIDE_LENGTH = 85;
 var ENEMY_MIN_SPEED = 100;
 var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
@@ -13,55 +14,66 @@ function randomSpeed() {
     return Math.floor(Math.random() * (ENEMY_MAX_SPEED - ENEMY_MIN_SPEED) + ENEMY_MIN_SPEED);
 }
 
-var Enemy = function(info) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+var Enemy;
+(function () {
+    Enemy = function(info) {
+        // Variables applied to each of our instances go here,
+        // we've provided one for you to get started
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = info.png;
-    this.x = info.x - randomStart();
-    this.y = info.y;
-    this.unit = randomSpeed();
-};
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-    this.x += dt * this.unit;
-    if (this.x > FINISH_X) {
-        this.x =  -randomStart();
+        // The image/sprite for our enemies, this uses
+        // a helper we've provided to easily load images
+        this.sprite = info.png;
+        this.x = info.x - randomStart();
+        this.y = info.y;
         this.unit = randomSpeed();
-    }
-};
+    };
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    Resources.load(this.sprite);
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+    // Update the enemy's position, required method for game
+    // Parameter: dt, a time delta between ticks
+    Enemy.prototype.update = function(dt) {
+        // You should multiply any movement by the dt parameter
+        // which will ensure the game runs at the same speed for
+        // all computers.
+        this.x += dt * this.unit;
+        if (this.x > FINISH_X) {
+            this.x =  -randomStart();
+            this.unit = randomSpeed();
+        }
+    };
+
+    // Draw the enemy on the screen, required method for game
+    Enemy.prototype.render = function() {
+        Resources.load(this.sprite);
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    };
+
+})();
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function (info) {
-    Enemy.call(this, info);
-    this.unit = SQUARE_SIDE_LENGTH;
-};
-Player.prototype = Object.create(Enemy.prototype);
-Player.prototype.constructor = Player;
-Player.prototype.handleInput = function (keydown) {
-    this.x = 100;
-};
+var Player;
+(function () {
+    Player = function (info) {
+        this.sprite = info.png;
+        this.x = info.x;
+        this.y = info.y;
+        this.unit = SQUARE_SIDE_LENGTH;
+    };
+    Player.prototype = Object.create(Enemy.prototype);
+    Player.prototype.constructor = Player;
+    Player.prototype.update = function () {
+
+    };
+    Player.prototype.handleInput = function (keydown) {
+        this.x = 100;
+    };
+})();
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var SQUARE_SIDE_LENGTH = 85;
 var allEnemies = [
     new Enemy({
         png: ENEMY_PNG,
@@ -82,8 +94,8 @@ var allEnemies = [
 var PLAYER_IMAGE = 'images/char-horn-girl.png';
 var player = new Player({
     png: PLAYER_IMAGE,
-    x: SQUARE_SIDE_LENGTH * 2.5,
-    y: SQUARE_SIDE_LENGTH * 4
+    x: SQUARE_SIDE_LENGTH * 2.5 - 10,
+    y: SQUARE_SIDE_LENGTH * 4 - 20      // modified the pic's position
 });
 
 // This listens for key presses and sends the keys to your
