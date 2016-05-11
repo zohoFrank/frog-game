@@ -1,11 +1,16 @@
 // Enemies our player must avoid
 var ENEMY_PNG = 'images/enemy-bug.png';
-var ENEMY_MOVEMENT_UNIT = 100;
+var ENEMY_MIN_SPEED = 100;
+var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
 var FINISH_X = 510;     // canvas width
 
-function getRandomStart() {
+function randomStart() {
     return Math.floor(Math.random() * 500);
+}
+
+function randomSpeed() {
+    return Math.floor(Math.random() * (ENEMY_MAX_SPEED - ENEMY_MIN_SPEED) + ENEMY_MIN_SPEED);
 }
 
 var Enemy = function(info) {
@@ -15,12 +20,9 @@ var Enemy = function(info) {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = info.png;
-    this.x = info.x - getRandomStart();
+    this.x = info.x - randomStart();
     this.y = info.y;
-    this.unit = function (x) {
-        if (x <= 0) return ENEMY_MOVEMENT_UNIT;
-        else return -ENEMY_MOVEMENT_UNIT;
-    }(this.x);
+    this.unit = randomSpeed();
 };
 
 // Update the enemy's position, required method for game
@@ -31,7 +33,8 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x += dt * this.unit;
     if (this.x > FINISH_X) {
-        this.x =  -getRandomStart();
+        this.x =  -randomStart();
+        this.unit = randomSpeed();
     }
 };
 
