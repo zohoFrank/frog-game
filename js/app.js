@@ -1,8 +1,13 @@
 // Enemies our player must avoid
 var ENEMY_PNG = 'images/enemy-bug.png';
-var ENEMY_MOVEMENT_UNIT = 20;
-var INITIAL_X = 0;
+var ENEMY_MOVEMENT_UNIT = 100;
 var INITIAL_Y = -20;
+var FINISH_X = 510;     // canvas width
+
+function getRandomStart() {
+    return Math.floor(Math.random() * 500);
+}
+
 var Enemy = function(info) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -10,7 +15,7 @@ var Enemy = function(info) {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = info.png;
-    this.x = info.x + INITIAL_X;
+    this.x = info.x - getRandomStart();
     this.y = info.y;
     this.unit = function (x) {
         if (x <= 0) return ENEMY_MOVEMENT_UNIT;
@@ -25,32 +30,28 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += dt * this.unit;
+    if (this.x > FINISH_X) {
+        this.x =  -getRandomStart();
+    }
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
+    Resources.load(this.sprite);
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function () {
-    this.sprite = 'image/char-horn-girl.png';
-    this.x = 100;
-    this.y = 100;
-    this.moveUnit = 10;
+var Player = function (info) {
+    Enemy.call(this, info);
+    this.unit = SQUARE_SIDE_LENGTH;
 };
 Player.prototype = Object.create(Enemy.prototype);
 Player.prototype.constructor = Player;
 Player.prototype.handleInput = function (keydown) {
-    switch (keydown) {
-        case 'left':
-            this.x -= this.moveUnit;
-            break;
-        default:
-            break;
-    }
+    this.x = 100;
 };
 
 
@@ -75,7 +76,12 @@ var allEnemies = [
         y: INITIAL_Y + SQUARE_SIDE_LENGTH * 3
     })
 ];
-var player = new Player();
+var PLAYER_IMAGE = 'images/char-horn-girl.png';
+var player = new Player({
+    png: PLAYER_IMAGE,
+    x: SQUARE_SIDE_LENGTH * 2.5,
+    y: SQUARE_SIDE_LENGTH * 4
+});
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
