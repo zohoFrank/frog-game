@@ -91,17 +91,17 @@ var allEnemies = [
     new Enemy({
         png: ENEMY_PNG,
         x: -randomStart(),
-        y: INITIAL_Y + HORIZON_UNIT_LEN
+        y: INITIAL_Y + VERTICAL_UNIT_LEN
     }),
     new Enemy({
         png: ENEMY_PNG,
         x: -randomStart(),
-        y: INITIAL_Y + HORIZON_UNIT_LEN * 2
+        y: INITIAL_Y + VERTICAL_UNIT_LEN * 2
     }),
     new Enemy({
         png: ENEMY_PNG,
         x: -randomStart(),
-        y: INITIAL_Y + HORIZON_UNIT_LEN * 3
+        y: INITIAL_Y + VERTICAL_UNIT_LEN * 3
     })
 ];
 var PLAYER_IMAGE = 'images/char-horn-girl.png';
