@@ -1,6 +1,7 @@
 // Enemies our player must avoid
 var ENEMY_PNG = 'images/enemy-bug.png';
-var SQUARE_SIDE_LENGTH = 85;
+var HORIZON_UNIT_LEN = 101;
+var VERTICAL_UNIT_LEN = 82;
 var ENEMY_MIN_SPEED = 100;
 var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
@@ -23,7 +24,7 @@ var Enemy;
         // The image/sprite for our enemies, this uses
         // a helper we've provided to easily load images
         this.sprite = info.png;
-        this.x = info.x - randomStart();
+        this.x = info.x;
         this.y = info.y;
         this.unit = randomSpeed();
     };
@@ -55,10 +56,7 @@ var Enemy;
 var Player;
 (function () {
     Player = function (info) {
-        this.sprite = info.png;
-        this.x = info.x;
-        this.y = info.y;
-        this.unit = SQUARE_SIDE_LENGTH;
+        Enemy.call(this, info);
     };
     Player.prototype = Object.create(Enemy.prototype);
     Player.prototype.constructor = Player;
@@ -66,7 +64,22 @@ var Player;
 
     };
     Player.prototype.handleInput = function (keydown) {
-        this.x = 100;
+        switch (keydown) {
+            case 'up':
+                this.y -= VERTICAL_UNIT_LEN;
+                break;
+            case 'down':
+                this.y += VERTICAL_UNIT_LEN;
+                break;
+            case 'left':
+                this.x -= HORIZON_UNIT_LEN;
+                break;
+            case 'right':
+                this.x += HORIZON_UNIT_LEN;
+                break;
+            default:
+                break;
+        }
     };
 })();
 
@@ -77,25 +90,25 @@ var Player;
 var allEnemies = [
     new Enemy({
         png: ENEMY_PNG,
-        x: 0,
-        y: INITIAL_Y + SQUARE_SIDE_LENGTH
+        x: -randomStart(),
+        y: INITIAL_Y + HORIZON_UNIT_LEN
     }),
     new Enemy({
         png: ENEMY_PNG,
-        x: 0,
-        y: INITIAL_Y + SQUARE_SIDE_LENGTH * 2
+        x: -randomStart(),
+        y: INITIAL_Y + HORIZON_UNIT_LEN * 2
     }),
     new Enemy({
         png: ENEMY_PNG,
-        x: 0,
-        y: INITIAL_Y + SQUARE_SIDE_LENGTH * 3
+        x: -randomStart(),
+        y: INITIAL_Y + HORIZON_UNIT_LEN * 3
     })
 ];
 var PLAYER_IMAGE = 'images/char-horn-girl.png';
 var player = new Player({
     png: PLAYER_IMAGE,
-    x: SQUARE_SIDE_LENGTH * 2.5 - 10,
-    y: SQUARE_SIDE_LENGTH * 4 - 20      // modified the pic's position
+    x: HORIZON_UNIT_LEN * 2,
+    y: VERTICAL_UNIT_LEN * 4 - 10      // modified the pic's position
 });
 
 // This listens for key presses and sends the keys to your
