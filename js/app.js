@@ -23,7 +23,7 @@ function randomSpeed() {
 
 // Enemies our player must avoid
 var Enemy;
-(function () {
+(function() {
     Enemy = function(info) {
         // Variables applied to each of our instances go here,
         // we've provided one for you to get started
@@ -44,7 +44,7 @@ var Enemy;
         // all computers.
         this.x += dt * this.unit;
         if (this.x > WIDTH) {
-            this.x =  -randomStart();
+            this.x = -randomStart();
             this.unit = randomSpeed();
         }
     };
@@ -61,8 +61,8 @@ var Enemy;
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player;
-(function () {
-    Player = function (info) {
+(function() {
+    Player = function(info) {
         Enemy.call(this, info);
         this.initPos = {
             x: info.x,
@@ -75,19 +75,19 @@ var Player;
     Player.prototype.constructor = Player;
 
     // helper: out of field
-    Player.prototype.outField = function () {
+    Player.prototype.outField = function() {
         var upper = 0;
         var downer = HEIGHT - VERTICAL_UNIT_LEN;
         var lefter = 0;
         var righter = WIDTH - HORIZON_UNIT_LEN;
-        if (this.x < lefter ||this.x > righter|| this.y < upper|| this.y > downer) {
+        if (this.x < lefter || this.x > righter || this.y < upper || this.y > downer) {
             this.x = this.initPos.x;
             this.y = this.initPos.y;
             this.life--;
         }
     };
 
-    Player.prototype.render = function () {
+    Player.prototype.render = function() {
         // render player pic
         Enemy.prototype.render.call(this);
         // draw hp text
@@ -96,11 +96,11 @@ var Player;
         ctx.fillText('HP: ' + this.life, 420, 100)
     };
 
-    Player.prototype.update = function () {
+    Player.prototype.update = function() {
         this.outField();
     };
 
-    Player.prototype.handleInput = function (keydown) {
+    Player.prototype.handleInput = function(keydown) {
         switch (keydown) {
             case 'up':
                 this.y -= VERTICAL_UNIT_LEN;
@@ -123,22 +123,22 @@ var Player;
 
 /** Score board **/
 var ScoreBoard;
-(function () {
-    ScoreBoard = function (enemies, extras, player) {
+(function() {
+    ScoreBoard = function(enemies, extras, player) {
         this.enemies = enemies;
         this.extras = extras;
         this.player = player;
     };
-    
+
     // Render the score text
-    ScoreBoard.prototype.render = function () {
+    ScoreBoard.prototype.render = function() {
         ctx.font = "20px Monaco";
-        ctx.fillStyle= "Brown";
+        ctx.fillStyle = "Brown";
         ctx.fillText('HP: ' + player.life, 420, 100)
     };
-    
-    
-    
+
+
+
 })();
 
 
@@ -165,7 +165,7 @@ var allEnemies = [
 var player = new Player({
     png: PLAYER_IMAGE,
     x: HORIZON_UNIT_LEN * 2,
-    y: VERTICAL_UNIT_LEN * 4 - 10      // modified the pic's position
+    y: VERTICAL_UNIT_LEN * 4 - 10 // modified the pic's position
 });
 
 var scoreBoard = new ScoreBoard(allEnemies, null, player);
