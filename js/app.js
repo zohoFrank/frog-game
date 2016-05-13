@@ -1,11 +1,15 @@
-var WIDTH = 510;
-var HEIGHT = 503;
+// canvas
+var WIDTH = 505;
+var HEIGHT = 523;
 var ENEMY_PNG = 'images/enemy-bug.png';
+// block
 var HORIZON_UNIT_LEN = 101;
 var VERTICAL_UNIT_LEN = 83;
 var ENEMY_MIN_SPEED = 100;
 var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
+// game
+var LIFE = 3;
 
 function randomStart() {
     return Math.floor(Math.random() * 500);
@@ -61,10 +65,22 @@ var Player;
         this.initPos = {
             x: info.x,
             y: info.y
-        }
+        };
+        this.life = LIFE;
     };
     Player.prototype = Object.create(Enemy.prototype);
+
     Player.prototype.constructor = Player;
+
+    Player.prototype.render = function () {
+        // render player pic
+        Enemy.prototype.render.call(this);
+        // draw lives
+        ctx.font = "20px Monaco";
+        ctx.fillStyle= "Brown";
+        ctx.fillText('HP: ' + this.life, 420, 100)
+    };
+
     Player.prototype.update = function () {
         var upper = 0;
         var downer = HEIGHT - VERTICAL_UNIT_LEN;
@@ -73,8 +89,10 @@ var Player;
         if (this.x < lefter ||this.x > righter|| this.y < upper|| this.y > downer) {
             this.x = this.initPos.x;
             this.y = this.initPos.y;
+            this.life--;
         }
     };
+
     Player.prototype.handleInput = function (keydown) {
         switch (keydown) {
             case 'up':
