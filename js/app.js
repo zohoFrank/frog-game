@@ -2,6 +2,7 @@
 var WIDTH = 505;
 var HEIGHT = 523;
 var ENEMY_PNG = 'images/enemy-bug.png';
+var PLAYER_IMAGE = 'images/char-horn-girl.png';
 // block
 var HORIZON_UNIT_LEN = 101;
 var VERTICAL_UNIT_LEN = 83;
@@ -11,6 +12,7 @@ var INITIAL_Y = -20;
 // game
 var LIFE = 3;
 
+/*** Helpers ***/
 function randomStart() {
     return Math.floor(Math.random() * 500);
 }
@@ -72,16 +74,8 @@ var Player;
 
     Player.prototype.constructor = Player;
 
-    Player.prototype.render = function () {
-        // render player pic
-        Enemy.prototype.render.call(this);
-        // draw lives
-        ctx.font = "20px Monaco";
-        ctx.fillStyle= "Brown";
-        ctx.fillText('HP: ' + this.life, 420, 100)
-    };
-
-    Player.prototype.update = function () {
+    // helper: out of field
+    Player.prototype.outField = function () {
         var upper = 0;
         var downer = HEIGHT - VERTICAL_UNIT_LEN;
         var lefter = 0;
@@ -91,6 +85,19 @@ var Player;
             this.y = this.initPos.y;
             this.life--;
         }
+    };
+
+    Player.prototype.render = function () {
+        // render player pic
+        Enemy.prototype.render.call(this);
+        // draw hp text
+        ctx.font = "20px Monaco";
+        ctx.fillStyle = "Brown";
+        ctx.fillText('HP: ' + this.life, 420, 100)
+    };
+
+    Player.prototype.update = function () {
+        this.outField();
     };
 
     Player.prototype.handleInput = function (keydown) {
@@ -114,6 +121,27 @@ var Player;
 })();
 
 
+/** Score board **/
+var ScoreBoard;
+(function () {
+    ScoreBoard = function (enemies, extras, player) {
+        this.enemies = enemies;
+        this.extras = extras;
+        this.player = player;
+    };
+    
+    // Render the score text
+    ScoreBoard.prototype.render = function () {
+        ctx.font = "20px Monaco";
+        ctx.fillStyle= "Brown";
+        ctx.fillText('HP: ' + player.life, 420, 100)
+    };
+    
+    
+    
+})();
+
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -134,12 +162,13 @@ var allEnemies = [
         y: INITIAL_Y + VERTICAL_UNIT_LEN * 3
     })
 ];
-var PLAYER_IMAGE = 'images/char-horn-girl.png';
 var player = new Player({
     png: PLAYER_IMAGE,
     x: HORIZON_UNIT_LEN * 2,
     y: VERTICAL_UNIT_LEN * 4 - 10      // modified the pic's position
 });
+
+var scoreBoard = new ScoreBoard(allEnemies, null, player);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
