@@ -1,11 +1,11 @@
-// Enemies our player must avoid
+var WIDTH = 510;
+var HEIGHT = 503;
 var ENEMY_PNG = 'images/enemy-bug.png';
 var HORIZON_UNIT_LEN = 101;
-var VERTICAL_UNIT_LEN = 82;
+var VERTICAL_UNIT_LEN = 83;
 var ENEMY_MIN_SPEED = 100;
 var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
-var FINISH_X = 510;     // canvas width
 
 function randomStart() {
     return Math.floor(Math.random() * 500);
@@ -15,6 +15,7 @@ function randomSpeed() {
     return Math.floor(Math.random() * (ENEMY_MAX_SPEED - ENEMY_MIN_SPEED) + ENEMY_MIN_SPEED);
 }
 
+// Enemies our player must avoid
 var Enemy;
 (function () {
     Enemy = function(info) {
@@ -36,7 +37,7 @@ var Enemy;
         // which will ensure the game runs at the same speed for
         // all computers.
         this.x += dt * this.unit;
-        if (this.x > FINISH_X) {
+        if (this.x > WIDTH) {
             this.x =  -randomStart();
             this.unit = randomSpeed();
         }
@@ -57,11 +58,22 @@ var Player;
 (function () {
     Player = function (info) {
         Enemy.call(this, info);
+        this.initPos = {
+            x: info.x,
+            y: info.y
+        }
     };
     Player.prototype = Object.create(Enemy.prototype);
     Player.prototype.constructor = Player;
     Player.prototype.update = function () {
-
+        var upper = 0;
+        var downer = HEIGHT - VERTICAL_UNIT_LEN;
+        var lefter = 0;
+        var righter = WIDTH - HORIZON_UNIT_LEN;
+        if (this.x < lefter ||this.x > righter|| this.y < upper|| this.y > downer) {
+            this.x = this.initPos.x;
+            this.y = this.initPos.y;
+        }
     };
     Player.prototype.handleInput = function (keydown) {
         switch (keydown) {
