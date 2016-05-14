@@ -127,7 +127,7 @@ var Player;
 var ScoreBoard;
 (function() {
     ScoreBoard = function(enemies, extras, player) {
-        this.enemies = enemies;
+        this.enemies = allEnemies;
         this.extras = extras;
         this.player = player;
         this.score = 0;
@@ -153,12 +153,28 @@ var ScoreBoard;
     // helper: life calculator
     ScoreBoard.prototype.lifeCal = function() {
         // player out of field
-        // 
+        // bug crashed
+        for (var i = 0; i < this.enemies.length; i++) {
+            var bug = this.enemies[i];
+            // alert('before bug');
+            if (this.isBugCrashed(bug)) {
+                player.resetDead();
+            }
+        }
     };
     
     // helper: score calculator
     ScoreBoard.prototype.scoreCal = function() {
         // todo
+    };
+    
+    // helper: crash into a bug?
+    ScoreBoard.prototype.isBugCrashed = function(bug) {
+        if (Math.abs(bug.x - player.x) < 40 && 
+        Math.abs(bug.y - player.y) < 40) {
+            return true;
+        }
+        return false;
     };
 
 })();
