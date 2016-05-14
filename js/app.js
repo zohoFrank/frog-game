@@ -74,7 +74,14 @@ var Player;
     Player.prototype = Object.create(Enemy.prototype);
 
     Player.prototype.constructor = Player;
-
+    
+    // helper: dead and reset
+    Player.prototype.resetDead = function() {
+        this.x = this.initPos.x;
+        this.y = this.initPos.y;
+        this.life--;
+    };
+    
     // helper: out of field
     Player.prototype.outField = function() {
         var upper = 0;
@@ -82,9 +89,7 @@ var Player;
         var lefter = 0;
         var righter = WIDTH - HORIZON_UNIT_LEN;
         if (this.x < lefter || this.x > righter || this.y < upper || this.y > downer) {
-            this.x = this.initPos.x;
-            this.y = this.initPos.y;
-            this.life--;
+            this.resetDead();
         }
     };
 
