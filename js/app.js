@@ -96,7 +96,7 @@ var Player;
     };
     
     // interface: get items
-    Player.prototype.getItem(item) {
+    Player.prototype.getItem = function(item) {
         // todo: if item has preq.... if not...
         // clean the list
     };
