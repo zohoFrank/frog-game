@@ -11,6 +11,7 @@ var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
 // game
 var LIFE = 3;
+var MOVE_SCORE = 10;
 
 /*** Helpers ***/
 function randomStart() {
@@ -90,10 +91,6 @@ var Player;
     Player.prototype.render = function() {
         // render player pic
         Enemy.prototype.render.call(this);
-        // draw hp text
-        ctx.font = "20px Monaco";
-        ctx.fillStyle = "Brown";
-        ctx.fillText('HP: ' + this.life, 420, 100)
     };
 
     Player.prototype.update = function() {
@@ -128,18 +125,40 @@ var ScoreBoard;
         this.enemies = enemies;
         this.extras = extras;
         this.player = player;
+        this.score = 0;
+        this.life = LIFE;
+    };
+    
+    // Update the score
+    ScoreBoard.prototype.update = function() {
+        this.lifeCal();
+        this.scoreCal();
     };
 
     // Render the score text
     ScoreBoard.prototype.render = function() {
+        // lives
         ctx.font = "20px Monaco";
         ctx.fillStyle = "Brown";
-        ctx.fillText('HP: ' + player.life, 420, 100)
+        ctx.fillText('HP: ' + player.life, 370, 90);
+        // scores
+        ctx.fillText('Scores: ' + this.score, 370, 115);
     };
 
-
+    // helper: life calculator
+    ScoreBoard.prototype.lifeCal = function() {
+        // player out of field
+        // 
+    };
+    
+    // helper: score calculator
+    ScoreBoard.prototype.scoreCal = function() {
+        // todo
+    };
 
 })();
+
+/**** Objects ****/
 
 
 // Now instantiate your objects.
