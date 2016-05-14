@@ -58,6 +58,7 @@ var Enemy;
 
 })();
 
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -70,6 +71,7 @@ var Player;
             y: info.y
         };
         this.life = LIFE;
+        this.items = [];
     };
     Player.prototype = Object.create(Enemy.prototype);
 
@@ -92,7 +94,13 @@ var Player;
             this.resetDead();
         }
     };
-
+    
+    // interface: get items
+    Player.prototype.getItem(item) {
+        // todo: if item has preq.... if not...
+        // clean the list
+    };
+    
     Player.prototype.render = function() {
         // render player pic
         Enemy.prototype.render.call(this);
@@ -179,8 +187,59 @@ var ScoreBoard;
 
 })();
 
-/**** Objects ****/
 
+/**** Objects ****/
+// helper: produce a temp object
+function extraDef(v, tf, tl, pr) {
+    return {
+        value: v,
+        timeFreq: tf,
+        timeLast: tl,
+        preq: pr
+    };
+}
+
+// helper: cleean all unnecessary extra in a list
+// necessary: needed sometime
+function cleanUnneeded(list) {
+    // todo
+}
+
+// Definition of different extras
+var EXTRAS = {
+    heart: extraDef(10, 20, 30, ""),
+    keys: extraDef(10, 20, 30, ""),
+    star: extraDef(10, 20, 30, ""),
+    boxStar: extraDef(10, 20, 30, ""),
+    blueJewl: extraDef(10, 20, 30, ""),
+    redJewl: extraDef(10, 20, 30, ""),
+    greenJewl: extraDef(10, 20, 30, "")
+};
+
+var Extra;
+(function() {
+    Extra = function(name, preq) {
+        var obj = EXTRAS[name];
+        this.value = obj.value;
+        this.freqClock = obj.timeFreq;
+        this.lastClock = obj.timeLast;
+        this.preq = EXTRAS[obj.preq];       // an object
+        this.shown = false;                 // state: not shown at first
+    };
+    
+    Extra.prototype.show = function() {
+        // todo
+    };
+    
+    Extra.prototype.dispear = function() {
+        // todo
+    };
+    
+    Extra.prototype.resetClock = function() {
+        // todo
+    };
+    
+})();
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
