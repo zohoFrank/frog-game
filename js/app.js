@@ -210,7 +210,7 @@ var EXTRAS = {
     heart: extraDef(10, 20, 30, ""),
     keys: extraDef(10, 20, 30, ""),
     star: extraDef(10, 20, 30, ""),
-    boxStar: extraDef(10, 20, 30, ""),
+    boxStar: extraDef(10, 20, 30, "keys"),
     blueJewl: extraDef(10, 20, 30, ""),
     redJewl: extraDef(10, 20, 30, ""),
     greenJewl: extraDef(10, 20, 30, "")
