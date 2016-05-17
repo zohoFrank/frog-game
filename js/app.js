@@ -106,7 +106,7 @@ var Player;
     
     // interface: get items
     Player.prototype.getItem = function(item) {
-        // todo: if item has preq.... if not...
+        // todo: if item has prereq.... if not...
         // clean the list
     };
     
@@ -196,36 +196,26 @@ var ScoreBoard;
 
 /**** Objects ****/
 // helper: produce a temp object
-function extraDef(v, tf, tl, pr) {
+function extraDef(v, tf, tl, pr, pic) {
     return {
         value: v,
         timeFreq: tf,
         timeLast: tl,
-        preq: pr
+        prereq: pr,
+        picture: pic
     };
 }
 
 // Definition of different extras
 var EXTRAS = {
-    heart: extraDef(10, 200, 300, ""),
-    keys: extraDef(10, 200, 300, ""),
-    rock: extraDef(10, 200, 300, ""),
-    star: extraDef(10, 100, 150, ""),
-    boxStar: extraDef(10, 200, 300, "keys"),
-    blueGem: extraDef(10, 20, 30, ""),
-    greenGem: extraDef(10, 20, 30, ""),
-    orangeGem: extraDef(10, 20, 30, "")
-};
-
-var EXTRA_PICS = {
-    heart: 'images/Heart.png',
-    keys: 'images/Key.png',
-    rock: 'images/Rock.png',
-    star: 'images/Star.png',
-    boxStar: 'images/Selector.png',
-    blueGem: 'images/Gem Blue.png',
-    greenGem: 'images/Gem Green.png',
-    orangeGem: 'images/Gem Orange.png'
+    heart: extraDef(10, 200, 300, "", 'images/Heart.png'),
+    keys: extraDef(10, 200, 300, "", 'images/Key.png'),
+    rock: extraDef(10, 200, 300, "", 'images/Rock.png'),
+    star: extraDef(10, 100, 150, "", 'images/Star.png'),
+    boxStar: extraDef(10, 200, 300, "keys", 'images/Selector.png'),
+    blueGem: extraDef(10, 20, 30, "", 'images/Gem Blue.png'),
+    greenGem: extraDef(10, 20, 30, "", 'images/Gem Green.png'),
+    orangeGem: extraDef(10, 20, 30, "", 'images/Gem Orange.png')
 };
 
 var Extra;
@@ -236,8 +226,8 @@ var Extra;
         this.value = obj.value;
         this.resetClock = [obj.timeFreq, obj.timeLast];
         this.clock = 0;
-        this.preq = EXTRAS[obj.preq];       // an object
-        this.pic = EXTRA_PICS[name];
+        this.prereq = EXTRAS[obj.prereq];       // an object
+        this.pic = obj.picture;
         this.shown = true;
         this.pos = randomPos();
     };
@@ -290,6 +280,7 @@ var allEnemies = [
         y: INITIAL_Y + VERTICAL_UNIT_LEN * 3
     })
 ];
+
 var player = new Player({
     png: PLAYER_IMAGE,
     x: HORIZON_UNIT_LEN * 2,
