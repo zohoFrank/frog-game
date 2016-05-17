@@ -11,17 +11,26 @@ var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
 // game
 var LIFE = 3;
-var MOVE_SCORE = 10;
 
 /*** Helpers ***/
-function randomStart() {
-    return Math.floor(Math.random() * 500);
+function randomNumber(min, max) {
+    return function() {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
 }
 
-function randomSpeed() {
-    return Math.floor(Math.random() * (ENEMY_MAX_SPEED - ENEMY_MIN_SPEED) + ENEMY_MIN_SPEED);
+var randomStart = randomNumber(500, 0);
+var randomSpeed = randomNumber(ENEMY_MAX_SPEED, ENEMY_MIN_SPEED);
+function randomPos() {
+    return [(randomNumber(1, 3))(), (randomNumber(0, 4))()];
 }
 
+
+function getPos(row, col) {
+    return [col * HORIZON_UNIT_LEN, row * VERTICAL_UNIT_LEN];
+}
+
+/*** Enemies and player ***/
 // Enemies our player must avoid
 var Enemy;
 (function() {
@@ -97,7 +106,7 @@ var Player;
     
     // interface: get items
     Player.prototype.getItem = function(item) {
-        // todo: if item has preq.... if not...
+        // todo: if item has prereq.... if not...
         // clean the list
     };
     
@@ -178,11 +187,8 @@ var ScoreBoard;
     
     // helper: crash into a bug?
     ScoreBoard.prototype.isBugCrashed = function(bug) {
-        if (Math.abs(bug.x - player.x) < 40 && 
-        Math.abs(bug.y - player.y) < 40) {
-            return true;
-        }
-        return false;
+        return (Math.abs(bug.x - player.x) < 40 &&
+        Math.abs(bug.y - player.y) < 40);
     };
 
 })();
@@ -190,56 +196,69 @@ var ScoreBoard;
 
 /**** Objects ****/
 // helper: produce a temp object
-function extraDef(v, tf, tl, pr) {
+function extraDef(v, tf, tl, pr, pic) {
     return {
         value: v,
         timeFreq: tf,
         timeLast: tl,
-        preq: pr
+        prereq: pr,
+        picture: pic
     };
-}
-
-// helper: cleean all unnecessary extra in a list
-// necessary: needed sometime
-function cleanUnneeded(list) {
-    // todo
 }
 
 // Definition of different extras
 var EXTRAS = {
-    heart: extraDef(10, 20, 30, ""),
-    keys: extraDef(10, 20, 30, ""),
-    star: extraDef(10, 20, 30, ""),
-    boxStar: extraDef(10, 20, 30, "keys"),
-    blueJewl: extraDef(10, 20, 30, ""),
-    redJewl: extraDef(10, 20, 30, ""),
-    greenJewl: extraDef(10, 20, 30, "")
+    heart: extraDef(10, 200, 300, "", 'images/Heart.png'),
+    keys: extraDef(10, 200, 300, "", 'images/Key.png'),
+    rock: extraDef(10, 200, 300, "", 'images/Rock.png'),
+    star: extraDef(10, 100, 150, "", 'images/Star.png'),
+    boxStar: extraDef(10, 200, 300, "keys", 'images/Selector.png'),
+    blueGem: extraDef(10, 20, 30, "", 'images/Gem Blue.png'),
+    greenGem: extraDef(10, 20, 30, "", 'images/Gem Green.png'),
+    orangeGem: extraDef(10, 20, 30, "", 'images/Gem Orange.png')
 };
 
 var Extra;
 (function() {
-    Extra = function(name, preq) {
+    Extra = function(name) {
+        this.name = name;
         var obj = EXTRAS[name];
         this.value = obj.value;
-        this.freqClock = obj.timeFreq;
-        this.lastClock = obj.timeLast;
-        this.preq = EXTRAS[obj.preq];       // an object
-        this.shown = false;                 // state: not shown at first
+        this.resetClock = [obj.timeFreq, obj.timeLast];
+        this.clock = 0;
+        this.prereq = EXTRAS[obj.prereq];       // an object
+        this.pic = obj.picture;
+        this.shown = true;
+        this.pos = randomPos();
+    };
+
+    Extra.prototype.update = function() {
+        this.clock++;
+        if (this.shown) {
+            if (this.clock > this.resetClock[1]) {
+                this.shown = false;
+                this.clock = 0;
+            }
+        } else {
+            if (this.clock > this.resetClock[0]) {
+                this.pos = randomPos();
+                this.shown = true;
+                this.clock = 0;
+            }
+        }
     };
     
-    Extra.prototype.show = function() {
-        // todo
-    };
-    
-    Extra.prototype.dispear = function() {
-        // todo
-    };
-    
-    Extra.prototype.resetClock = function() {
-        // todo
-    };
+    Extra.prototype.render = function() {
+        if (this.shown) {
+            Resources.load(this.pic);
+            console.log(this.pos[0] + " " + this.pos[1]);
+            var cord = getPos(this.pos[0], this.pos[1]);
+            ctx.drawImage(Resources.get(this.pic), cord[0], cord[1]);       // fixme
+        }
+    }
     
 })();
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -261,13 +280,18 @@ var allEnemies = [
         y: INITIAL_Y + VERTICAL_UNIT_LEN * 3
     })
 ];
+
 var player = new Player({
     png: PLAYER_IMAGE,
     x: HORIZON_UNIT_LEN * 2,
     y: VERTICAL_UNIT_LEN * 4 - 10 // modified the pic's position
 });
 
-var scoreBoard = new ScoreBoard(allEnemies, null, player);
+var extras = [
+    new Extra("star")
+];
+
+var scoreBoard = new ScoreBoard(allEnemies, extras, player);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

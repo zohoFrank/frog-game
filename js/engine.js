@@ -94,6 +94,9 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        extras.forEach(function(extra) {
+            extra.update();
+        });
         player.update();
         scoreBoard.update();
     }
@@ -150,6 +153,10 @@ var Engine = (function(global) {
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
+        });
+
+        extras.forEach(function(extra) {
+            extra.render();
         });
 
         player.render();
