@@ -11,17 +11,26 @@ var ENEMY_MAX_SPEED = 200;
 var INITIAL_Y = -20;
 // game
 var LIFE = 3;
-var MOVE_SCORE = 10;
 
 /*** Helpers ***/
-function randomStart() {
-    return Math.floor(Math.random() * 500);
+function randomNumber(min, max) {
+    return function() {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
 }
 
-function randomSpeed() {
-    return Math.floor(Math.random() * (ENEMY_MAX_SPEED - ENEMY_MIN_SPEED) + ENEMY_MIN_SPEED);
+var randomStart = randomNumber(500, 0);
+var randomSpeed = randomNumber(ENEMY_MAX_SPEED, ENEMY_MIN_SPEED);
+function randomPos() {
+    return [(randomNumber(1, 3))(), (randomNumber(0, 4))()];
 }
 
+
+function getPos(row, col) {
+    return [col * HORIZON_UNIT_LEN, row * VERTICAL_UNIT_LEN];
+}
+
+/*** Enemies and player ***/
 // Enemies our player must avoid
 var Enemy;
 (function() {
@@ -178,11 +187,8 @@ var ScoreBoard;
     
     // helper: crash into a bug?
     ScoreBoard.prototype.isBugCrashed = function(bug) {
-        if (Math.abs(bug.x - player.x) < 40 && 
-        Math.abs(bug.y - player.y) < 40) {
-            return true;
-        }
-        return false;
+        return (Math.abs(bug.x - player.x) < 40 &&
+        Math.abs(bug.y - player.y) < 40);
     };
 
 })();
@@ -201,11 +207,11 @@ function extraDef(v, tf, tl, pr) {
 
 // Definition of different extras
 var EXTRAS = {
-    heart: extraDef(10, 20, 30, ""),
-    keys: extraDef(10, 20, 30, ""),
-    rock: extraDef(10, 20, 30, ""),
-    star: extraDef(10, 20, 30, ""),
-    boxStar: extraDef(10, 20, 30, "keys"),
+    heart: extraDef(10, 200, 300, ""),
+    keys: extraDef(10, 200, 300, ""),
+    rock: extraDef(10, 200, 300, ""),
+    star: extraDef(10, 100, 150, ""),
+    boxStar: extraDef(10, 200, 300, "keys"),
     blueGem: extraDef(10, 20, 30, ""),
     greenGem: extraDef(10, 20, 30, ""),
     orangeGem: extraDef(10, 20, 30, "")
@@ -233,6 +239,7 @@ var Extra;
         this.preq = EXTRAS[obj.preq];       // an object
         this.pic = EXTRA_PICS[name];
         this.shown = true;
+        this.pos = randomPos();
     };
 
     Extra.prototype.update = function() {
@@ -244,6 +251,7 @@ var Extra;
             }
         } else {
             if (this.clock > this.resetClock[0]) {
+                this.pos = randomPos();
                 this.shown = true;
                 this.clock = 0;
             }
@@ -253,7 +261,9 @@ var Extra;
     Extra.prototype.render = function() {
         if (this.shown) {
             Resources.load(this.pic);
-            ctx.drawImage(Resources.get(this.pic), 100, 100);       // fixme
+            console.log(this.pos[0] + " " + this.pos[1]);
+            var cord = getPos(this.pos[0], this.pos[1]);
+            ctx.drawImage(Resources.get(this.pic), cord[0], cord[1]);       // fixme
         }
     }
     
