@@ -199,47 +199,66 @@ function extraDef(v, tf, tl, pr) {
     };
 }
 
-// helper: cleean all unnecessary extra in a list
-// necessary: needed sometime
-function cleanUnneeded(list) {
-    // todo
-}
-
 // Definition of different extras
 var EXTRAS = {
     heart: extraDef(10, 20, 30, ""),
     keys: extraDef(10, 20, 30, ""),
+    rock: extraDef(10, 20, 30, ""),
     star: extraDef(10, 20, 30, ""),
     boxStar: extraDef(10, 20, 30, "keys"),
-    blueJewl: extraDef(10, 20, 30, ""),
-    redJewl: extraDef(10, 20, 30, ""),
-    greenJewl: extraDef(10, 20, 30, "")
+    blueGem: extraDef(10, 20, 30, ""),
+    greenGem: extraDef(10, 20, 30, ""),
+    orangeGem: extraDef(10, 20, 30, "")
+};
+
+var EXTRA_PICS = {
+    heart: 'images/Heart.png',
+    keys: 'images/Key.png',
+    rock: 'images/Rock.png',
+    star: 'images/Star.png',
+    boxStar: 'images/Selector.png',
+    blueGem: 'images/Gem Blue.png',
+    greenGem: 'images/Gem Green.png',
+    orangeGem: 'images/Gem Orange.png'
 };
 
 var Extra;
 (function() {
-    Extra = function(name, preq) {
+    Extra = function(name) {
+        this.name = name;
         var obj = EXTRAS[name];
         this.value = obj.value;
-        this.freqClock = obj.timeFreq;
-        this.lastClock = obj.timeLast;
+        this.resetClock = [obj.timeFreq, obj.timeLast];
+        this.clock = 0;
         this.preq = EXTRAS[obj.preq];       // an object
-        this.shown = false;                 // state: not shown at first
+        this.pic = EXTRA_PICS[name];
+        this.shown = true;
+    };
+
+    Extra.prototype.update = function() {
+        this.clock++;
+        if (this.shown) {
+            if (this.clock > this.resetClock[1]) {
+                this.shown = false;
+                this.clock = 0;
+            }
+        } else {
+            if (this.clock > this.resetClock[0]) {
+                this.shown = true;
+                this.clock = 0;
+            }
+        }
     };
     
-    Extra.prototype.show = function() {
-        // todo
-    };
-    
-    Extra.prototype.dispear = function() {
-        // todo
-    };
-    
-    Extra.prototype.resetClock = function() {
-        // todo
-    };
+    Extra.prototype.render = function() {
+        if (this.shown) {
+            Resources.load(this.pic);
+            ctx.drawImage(Resources.get(this.pic), 100, 100);       // fixme
+        }
+    }
     
 })();
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -267,7 +286,11 @@ var player = new Player({
     y: VERTICAL_UNIT_LEN * 4 - 10 // modified the pic's position
 });
 
-var scoreBoard = new ScoreBoard(allEnemies, null, player);
+var extras = [
+    new Extra("star")
+];
+
+var scoreBoard = new ScoreBoard(allEnemies, extras, player);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
