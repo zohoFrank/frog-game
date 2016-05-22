@@ -162,9 +162,9 @@ var ScoreBoard;
         // lives
         ctx.font = "20px Monaco";
         ctx.fillStyle = "Brown";
-        ctx.fillText('HP: ' + this.player.life, 370, 90);
+        ctx.fillText('HP: ' + this.player.life, 340, 90);
         // scores
-        ctx.fillText('Scores: ' + this.score, 370, 115);
+        ctx.fillText('Scores: ' + this.score, 340, 115);
     };
 
     // helper: crash into an item?
@@ -199,7 +199,7 @@ var ScoreBoard;
         // whether crashed
         for (var i = 0; i < this.extras.length; i++) {
             var item = this.extras[i];
-            if (this.isCrashed(item)) {
+            if (this.isCrashed(item) && item.shown) {
                 console.log("in here");
                 this.score += item.value;
             }
@@ -304,7 +304,6 @@ var player = new Player({
 });
 
 var extras = [
-    new Extra("star"),
     new Extra("star"),
     new Extra("star")
 ];
