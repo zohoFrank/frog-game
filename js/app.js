@@ -22,7 +22,7 @@ function randomNumber(min, max) {
 var randomStart = randomNumber(500, 0);
 var randomSpeed = randomNumber(ENEMY_MAX_SPEED, ENEMY_MIN_SPEED);
 function randomPos() {
-    return [(randomNumber(1, 3))(), (randomNumber(0, 4))()];
+    return [(randomNumber(1, 4))(), (randomNumber(0, 5))()];
 }
 
 
@@ -35,23 +35,13 @@ function getPos(row, col) {
 var Enemy;
 (function() {
     Enemy = function(info) {
-        // Variables applied to each of our instances go here,
-        // we've provided one for you to get started
-
-        // The image/sprite for our enemies, this uses
-        // a helper we've provided to easily load images
         this.sprite = info.png;
         this.x = info.x;
         this.y = info.y;
         this.unit = randomSpeed();
     };
 
-    // Update the enemy's position, required method for game
-    // Parameter: dt, a time delta between ticks
     Enemy.prototype.update = function(dt) {
-        // You should multiply any movement by the dt parameter
-        // which will ensure the game runs at the same speed for
-        // all computers.
         this.x += dt * this.unit;
         if (this.x > WIDTH) {
             this.x = -randomStart();
@@ -59,7 +49,6 @@ var Enemy;
         }
     };
 
-    // Draw the enemy on the screen, required method for game
     Enemy.prototype.render = function() {
         Resources.load(this.sprite);
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -68,9 +57,6 @@ var Enemy;
 })();
 
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 var Player;
 (function() {
     Player = function(info) {
@@ -200,7 +186,6 @@ var ScoreBoard;
         for (var i = 0; i < this.extras.length; i++) {
             var item = this.extras[i];
             if (this.isCrashed(item) && item.shown) {
-                console.log("in here");
                 this.score += item.value;
             }
         }
