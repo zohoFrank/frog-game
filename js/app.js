@@ -106,8 +106,8 @@ var Player;
     
     // interface: get items
     Player.prototype.getItem = function(item) {
-        // todo: if item has prereq.... if not...
-        // clean the list
+        // just append the list: items
+
     };
     
     Player.prototype.render = function() {
@@ -162,9 +162,24 @@ var ScoreBoard;
         // lives
         ctx.font = "20px Monaco";
         ctx.fillStyle = "Brown";
-        ctx.fillText('HP: ' + player.life, 370, 90);
+        ctx.fillText('HP: ' + this.player.life, 370, 90);
         // scores
         ctx.fillText('Scores: ' + this.score, 370, 115);
+    };
+
+    // helper: crash into an item?
+    ScoreBoard.prototype.isCrashed = function(item) {
+        var x, y;
+        if (item.pos === undefined) {
+            x = item.x;
+            y = item.y;
+        } else {
+            var realPos = getPos(item.pos[0], item.pos[1]);
+            x = realPos[0];
+            y = realPos[1];
+        }
+        return (Math.abs(x - this.player.x) < 40 &&
+        Math.abs(y - this.player.y) < 40);
     };
 
     // helper: life calculator
@@ -173,22 +188,23 @@ var ScoreBoard;
         // bug crashed
         for (var i = 0; i < this.enemies.length; i++) {
             var bug = this.enemies[i];
-            // alert('before bug');
-            if (this.isBugCrashed(bug)) {
-                player.resetDead();
+            if (this.isCrashed(bug)) {
+                this.player.resetDead();
             }
         }
     };
-    
+
     // helper: score calculator
     ScoreBoard.prototype.scoreCal = function() {
-        // todo
-    };
-    
-    // helper: crash into a bug?
-    ScoreBoard.prototype.isBugCrashed = function(bug) {
-        return (Math.abs(bug.x - player.x) < 40 &&
-        Math.abs(bug.y - player.y) < 40);
+        // whether crashed
+        for (var i = 0; i < this.extras.length; i++) {
+            var item = this.extras[i];
+            if (this.isCrashed(item)) {
+                console.log("in here");
+                this.score += item.value;
+            }
+        }
+
     };
 
 })();
@@ -206,15 +222,16 @@ function extraDef(v, tf, tl, pr, pic) {
     };
 }
 
-// Definition of different extras
+// Definition of different extras: score, time frequency, time last, prerequisite, picture
 var EXTRAS = {
+    // only star is applied
     heart: extraDef(10, 200, 300, "", 'images/Heart.png'),
     keys: extraDef(10, 200, 300, "", 'images/Key.png'),
     rock: extraDef(10, 200, 300, "", 'images/Rock.png'),
     star: extraDef(10, 100, 150, "", 'images/Star.png'),
     boxStar: extraDef(10, 200, 300, "keys", 'images/Selector.png'),
-    blueGem: extraDef(10, 20, 30, "", 'images/Gem Blue.png'),
-    greenGem: extraDef(10, 20, 30, "", 'images/Gem Green.png'),
+    blueGem: extraDef(10, 220, 300, "", 'images/Gem Blue.png'),
+    greenGem: extraDef(10, 200, 330, "", 'images/Gem Green.png'),
     orangeGem: extraDef(10, 20, 30, "", 'images/Gem Orange.png')
 };
 
@@ -225,10 +242,10 @@ var Extra;
         var obj = EXTRAS[name];
         this.value = obj.value;
         this.resetClock = [obj.timeFreq, obj.timeLast];
-        this.clock = 0;
+        this.clock = randomNumber(0, obj.timeFreq)();
         this.prereq = EXTRAS[obj.prereq];       // an object
         this.pic = obj.picture;
-        this.shown = true;
+        this.shown = false;
         this.pos = randomPos();
     };
 
@@ -251,7 +268,6 @@ var Extra;
     Extra.prototype.render = function() {
         if (this.shown) {
             Resources.load(this.pic);
-            console.log(this.pos[0] + " " + this.pos[1]);
             var cord = getPos(this.pos[0], this.pos[1]);
             ctx.drawImage(Resources.get(this.pic), cord[0], cord[1]);       // fixme
         }
@@ -288,6 +304,8 @@ var player = new Player({
 });
 
 var extras = [
+    new Extra("star"),
+    new Extra("star"),
     new Extra("star")
 ];
 
