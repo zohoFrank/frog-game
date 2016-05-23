@@ -22,7 +22,7 @@ function randomNumber(min, max) {
 var randomStart = randomNumber(500, 0);
 var randomSpeed = randomNumber(ENEMY_MAX_SPEED, ENEMY_MIN_SPEED);
 function randomPos() {
-    return [(randomNumber(1, 3))(), (randomNumber(0, 4))()];
+    return [(randomNumber(1, 4))(), (randomNumber(0, 5))()];
 }
 
 
@@ -35,23 +35,13 @@ function getPos(row, col) {
 var Enemy;
 (function() {
     Enemy = function(info) {
-        // Variables applied to each of our instances go here,
-        // we've provided one for you to get started
-
-        // The image/sprite for our enemies, this uses
-        // a helper we've provided to easily load images
         this.sprite = info.png;
         this.x = info.x;
         this.y = info.y;
         this.unit = randomSpeed();
     };
 
-    // Update the enemy's position, required method for game
-    // Parameter: dt, a time delta between ticks
     Enemy.prototype.update = function(dt) {
-        // You should multiply any movement by the dt parameter
-        // which will ensure the game runs at the same speed for
-        // all computers.
         this.x += dt * this.unit;
         if (this.x > WIDTH) {
             this.x = -randomStart();
@@ -59,7 +49,6 @@ var Enemy;
         }
     };
 
-    // Draw the enemy on the screen, required method for game
     Enemy.prototype.render = function() {
         Resources.load(this.sprite);
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -68,9 +57,6 @@ var Enemy;
 })();
 
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 var Player;
 (function() {
     Player = function(info) {
@@ -106,8 +92,8 @@ var Player;
     
     // interface: get items
     Player.prototype.getItem = function(item) {
-        // todo: if item has prereq.... if not...
-        // clean the list
+        // just append the list: items
+
     };
     
     Player.prototype.render = function() {
@@ -148,7 +134,7 @@ var ScoreBoard;
         this.extras = extras;
         this.player = player;
         this.score = 0;
-        this.life = LIFE;
+        this.info = "";
     };
     
     // Update the score
@@ -162,9 +148,27 @@ var ScoreBoard;
         // lives
         ctx.font = "20px Monaco";
         ctx.fillStyle = "Brown";
-        ctx.fillText('HP: ' + player.life, 370, 90);
+        ctx.fillText('HP: ' + this.player.life, 340, 90);
         // scores
-        ctx.fillText('Scores: ' + this.score, 370, 115);
+        ctx.fillText('Scores: ' + this.score, 340, 115);
+        // game over
+        ctx.font = "60px Monaco";
+        ctx.fillText(this.info, 100, 300);
+    };
+
+    // helper: crash into an item?
+    ScoreBoard.prototype.isCrashed = function(item) {
+        var x, y;
+        if (item.pos === undefined) {
+            x = item.x;
+            y = item.y;
+        } else {
+            var realPos = getPos(item.pos[0], item.pos[1]);
+            x = realPos[0];
+            y = realPos[1];
+        }
+        return (Math.abs(x - this.player.x) < 40 &&
+        Math.abs(y - this.player.y) < 40);
     };
 
     // helper: life calculator
@@ -173,28 +177,28 @@ var ScoreBoard;
         // bug crashed
         for (var i = 0; i < this.enemies.length; i++) {
             var bug = this.enemies[i];
-            // alert('before bug');
-            if (this.isBugCrashed(bug)) {
-                player.resetDead();
+            if (this.isCrashed(bug)) {
+                this.player.resetDead();
             }
         }
     };
-    
+
     // helper: score calculator
     ScoreBoard.prototype.scoreCal = function() {
-        // todo
-    };
-    
-    // helper: crash into a bug?
-    ScoreBoard.prototype.isBugCrashed = function(bug) {
-        return (Math.abs(bug.x - player.x) < 40 &&
-        Math.abs(bug.y - player.y) < 40);
+        // whether crashed
+        for (var i = 0; i < this.extras.length; i++) {
+            var item = this.extras[i];
+            if (this.isCrashed(item) && item.shown) {
+                this.score += item.value;
+            }
+        }
+
     };
 
 })();
 
 
-/**** Objects ****/
+/**** Extras ****/
 // helper: produce a temp object
 function extraDef(v, tf, tl, pr, pic) {
     return {
@@ -206,15 +210,16 @@ function extraDef(v, tf, tl, pr, pic) {
     };
 }
 
-// Definition of different extras
+// Definition of different extras: score, time frequency, time last, prerequisite, picture
 var EXTRAS = {
+    // only star is applied
     heart: extraDef(10, 200, 300, "", 'images/Heart.png'),
     keys: extraDef(10, 200, 300, "", 'images/Key.png'),
     rock: extraDef(10, 200, 300, "", 'images/Rock.png'),
     star: extraDef(10, 100, 150, "", 'images/Star.png'),
     boxStar: extraDef(10, 200, 300, "keys", 'images/Selector.png'),
-    blueGem: extraDef(10, 20, 30, "", 'images/Gem Blue.png'),
-    greenGem: extraDef(10, 20, 30, "", 'images/Gem Green.png'),
+    blueGem: extraDef(10, 220, 300, "", 'images/Gem Blue.png'),
+    greenGem: extraDef(10, 200, 330, "", 'images/Gem Green.png'),
     orangeGem: extraDef(10, 20, 30, "", 'images/Gem Orange.png')
 };
 
@@ -225,10 +230,10 @@ var Extra;
         var obj = EXTRAS[name];
         this.value = obj.value;
         this.resetClock = [obj.timeFreq, obj.timeLast];
-        this.clock = 0;
+        this.clock = randomNumber(0, obj.timeFreq)();
         this.prereq = EXTRAS[obj.prereq];       // an object
         this.pic = obj.picture;
-        this.shown = true;
+        this.shown = false;
         this.pos = randomPos();
     };
 
@@ -251,7 +256,6 @@ var Extra;
     Extra.prototype.render = function() {
         if (this.shown) {
             Resources.load(this.pic);
-            console.log(this.pos[0] + " " + this.pos[1]);
             var cord = getPos(this.pos[0], this.pos[1]);
             ctx.drawImage(Resources.get(this.pic), cord[0], cord[1]);       // fixme
         }
@@ -260,9 +264,7 @@ var Extra;
 })();
 
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+// Instances
 var allEnemies = [
     new Enemy({
         png: ENEMY_PNG,
@@ -288,13 +290,12 @@ var player = new Player({
 });
 
 var extras = [
+    new Extra("star"),
     new Extra("star")
 ];
 
 var scoreBoard = new ScoreBoard(allEnemies, extras, player);
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
