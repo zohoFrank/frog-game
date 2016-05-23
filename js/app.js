@@ -134,7 +134,7 @@ var ScoreBoard;
         this.extras = extras;
         this.player = player;
         this.score = 0;
-        this.life = LIFE;
+        this.info = "";
     };
     
     // Update the score
@@ -151,6 +151,9 @@ var ScoreBoard;
         ctx.fillText('HP: ' + this.player.life, 340, 90);
         // scores
         ctx.fillText('Scores: ' + this.score, 340, 115);
+        // game over
+        ctx.font = "60px Monaco";
+        ctx.fillText(this.info, 100, 300);
     };
 
     // helper: crash into an item?
@@ -195,7 +198,7 @@ var ScoreBoard;
 })();
 
 
-/**** Objects ****/
+/**** Extras ****/
 // helper: produce a temp object
 function extraDef(v, tf, tl, pr, pic) {
     return {
@@ -261,9 +264,7 @@ var Extra;
 })();
 
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+// Instances
 var allEnemies = [
     new Enemy({
         png: ENEMY_PNG,
@@ -295,8 +296,6 @@ var extras = [
 
 var scoreBoard = new ScoreBoard(allEnemies, extras, player);
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
